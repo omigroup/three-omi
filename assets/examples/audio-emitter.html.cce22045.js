@@ -125,7 +125,7 @@ async function main() {
   const animationMixer = new AnimationMixer(scene);
   const gltfLoader = new GLTFLoader();
   gltfLoader.register((parser) => new GLTFAudioEmitterExtension(parser, audioListener));
-  const { scene: gltfScene, animations } = await gltfLoader.loadAsync("/models/OMI_audio_emitter-simple.gltf");
+  const { scene: gltfScene, animations } = await gltfLoader.loadAsync("../models/OMI_audio_emitter-simple.gltf");
   scene.add(gltfScene);
   for (const clip of animations) {
     const action = animationMixer.clipAction(clip, gltfScene);
