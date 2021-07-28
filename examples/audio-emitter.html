@@ -71,7 +71,7 @@
         const gltfLoader = new GLTFLoader();
         gltfLoader.register(parser => new GLTFAudioEmitterExtension(parser, audioListener));
         const { scene: gltfScene, animations } = await gltfLoader
-          .loadAsync("/models/OMI_audio_emitter-simple.gltf");
+          .loadAsync("../models/OMI_audio_emitter-simple.gltf");
 
         scene.add(gltfScene);
 
