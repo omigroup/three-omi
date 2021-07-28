@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>three-omi | Examples</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <h1>
+          <a href=".."> three-omi: </a>
+        </h1>
+        <h3>Examples:</h3>
+        <li>
+          <a href="./audio-emitter.html" target="iframe"> Audio Emitter </a>
+        </li>
+      </nav>
+      <iframe name="iframe" allow="autoplay" frameborder="0"></iframe>
+    </div>
+    <script>
+      const iframe = document.querySelector("iframe");
+
+      const firstParams = new URLSearchParams(location.search);
+      const firstExample = firstParams.get("example");
+
+      if (firstExample) {
+        iframe.src = `./${firstExample}.html`;
+      } else {
+        iframe.src = "./audio-emitter.html";
+      }
+
+      iframe.addEventListener("load", (e) => {
+        const params = new URLSearchParams(location.search);
+        const [_, exampleName] = iframe.contentWindow.location.pathname.match(
+          /\/examples\/([^.]+)\.html/
+        );
+        params.set("example", exampleName);
+        history.replaceState({}, "", `${location.pathname}?${params}`);
+      });
+    </script>
+  </body>
+</html>

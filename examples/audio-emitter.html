@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>three-omi | Examples: Audio Listener</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <script type="module">
+      import {
+        Scene,
+        AudioListener,
+        PerspectiveCamera,
+        WebGLRenderer
+      } from "three";
+      import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
+      const scene = new Scene();
+      const camera = new PerspectiveCamera();
+      const renderer = new WebGLRenderer();
+      const audioListener = new AudioListener();
+
+      const gltfLoader = new GLTFLoader().loadAsync("./models/OMI_audio_emitter-simple.gltf");
+    </script>
+  </body>
+</html>

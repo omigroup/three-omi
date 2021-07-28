@@ -1,0 +1,28 @@
+{
+  "name": "three-omi",
+  "version": "0.0.0",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/three-omi.cjs.js",
+  "module": "./dist/three-omi.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/three-omi.es.js",
+      "require": "./dist/three-omi.cjs.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build-site": "vite build --mode site",
+    "preview-site": "vite preview --mode site"
+  },
+  "devDependencies": {
+    "three": "^0.130.1",
+    "vite": "^2.4.4"
+  },
+  "peerDependencies": {
+    "three": ">= 0.127.0"
+  }
+}
