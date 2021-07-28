@@ -16,7 +16,7 @@
     "dev": "vite",
     "build": "vite build",
     "build-site": "vite build --mode site",
-    "preview-site": "vite preview --mode site"
+    "preview-site": "vite preview"
   },
   "devDependencies": {
     "three": "^0.130.1",
