@@ -56,7 +56,6 @@
         Clock
       } from "three";
       import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-      import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
       import { GLTFAudioEmitterExtension } from "../src/three-omi";
 
       async function main() {
@@ -95,9 +94,6 @@
           animationMixer.update(dt);
           renderer.render(scene, camera);
         });
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.update();
 
         function onResize() {
           camera.aspect = window.innerWidth / window.innerHeight;
