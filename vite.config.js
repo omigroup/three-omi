@@ -48,7 +48,7 @@ export default ({ command, mode }) => {
     return {
       build: {
         lib: {
-          entry: path.resolve(__dirname, "src/three-omi.ts"),
+          entry: path.resolve(__dirname, "src/three-omi.js"),
           name: "OMI",
           formats: ["es", "cjs"],
         },
