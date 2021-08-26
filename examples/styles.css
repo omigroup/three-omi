@@ -40,6 +40,14 @@ iframe, main {
   color: white;
 }
 
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
 .center {
   display: flex;
   flex-direction: column;

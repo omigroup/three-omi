@@ -1,4 +1,4 @@
-import { Audio, PositionalAudio } from "three";
+import { Audio, PositionalAudio, MathUtils } from "three";
 
 export class GLTFAudioEmitterExtension {
   constructor(parser, listener) {
@@ -14,8 +14,6 @@ export class GLTFAudioEmitterExtension {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
     const audioClipDef = extension.audioClips[audioClipIndex];
-
-    console.log("loadAudioClip", audioClipIndex);
 
     for (const source of audioClipDef.sources) {
       if (this.testEl.canPlayType(source.mimeType)) {
@@ -51,40 +49,40 @@ export class GLTFAudioEmitterExtension {
     const extension = json.extensions[this.name];
     const audioEmitterDef = extension.audioEmitters[audioEmitterIndex];
 
-    console.log("loadAudioEmitter", audioEmitterIndex);
-
     let obj;
 
     if (audioEmitterDef.type === "global") {
       obj = new Audio(this.listener);
     } else {
       obj = new PositionalAudio(this.listener);
-      obj.setRefDistance(audioEmitterDef.refDistance);
-      obj.setRolloffFactor(audioEmitterDef.rolloffFactor);
-      obj.setDistanceModel(audioEmitterDef.distanceModel);
-      obj.setMaxDistance(audioEmitterDef.maxDistance);
+      obj.setRefDistance(audioEmitterDef.refDistance !== undefined ? audioEmitterDef.refDistance : 1);
+      obj.setRolloffFactor(audioEmitterDef.rolloffFactor !== undefined ? audioEmitterDef.rolloffFactor : 1);
+      obj.setDistanceModel(audioEmitterDef.distanceModel || "inverse");
+      obj.setMaxDistance(audioEmitterDef.maxDistance !== undefined ? audioEmitterDef.maxDistance : 10000);
       obj.setDirectionalCone(
-        audioEmitterDef.coneInnerAngle,
-        audioEmitterDef.coneOuterAngle,
-        audioEmitterDef.coneOuterGain
+        MathUtils.radToDeg(audioEmitterDef.coneInnerAngle !== undefined ? audioEmitterDef.coneInnerAngle : Math.PI * 2),
+        MathUtils.radToDeg(audioEmitterDef.coneOuterAngle !== undefined ? audioEmitterDef.coneOuterAngle : Math.PI * 2),
+        audioEmitterDef.coneOuterGain !== undefined ? audioEmitterDef.coneOuterGain : 0
       );
     }
 
-    obj.name = audioEmitterDef.name;
-    obj.setVolume(audioEmitterDef.volume);
-    obj.setLoop(audioEmitterDef.loop);
+    obj.name = audioEmitterDef.name || "";
+    obj.setVolume(audioEmitterDef.volume !== undefined ? audioEmitterDef.volume : 1);
 
     return this.loadAudioClip(audioEmitterDef.clip).then((clip) => {
       if (clip instanceof HTMLMediaElement) {
-        console.log(clip);
         obj.setMediaElementSource(clip);
       } else {
         obj.setBuffer(clip);
       }
 
-      this.audioEmitters.push({ autoPlay: audioEmitterDef.autoPlay, obj });
+      if (obj.hasPlaybackControl) {
+        obj.setLoop(!!audioEmitterDef.loop);
+      } else {
+        obj.source.mediaElement.loop = !!audioEmitterDef.loop;
+      }
 
-      console.log("audioEmitters", { autoPlay: audioEmitterDef.autoPlay, obj });
+      this.audioEmitters.push({ autoPlay: !!audioEmitterDef.autoPlay, obj });
 
       return obj;
     });
@@ -97,8 +95,6 @@ export class GLTFAudioEmitterExtension {
     if (!nodeDef.extensions || !nodeDef.extensions[this.name]) {
       return null;
     }
-
-    console.log("createNodeAttachment", nodeIndex);
 
     const extension = nodeDef.extensions[this.name];
     const audioEmitterIndex = extension.audioEmitter;
@@ -113,8 +109,6 @@ export class GLTFAudioEmitterExtension {
     if (!sceneDef.extensions || !sceneDef.extensions[this.name]) {
       return null;
     }
-
-    console.log("loadSceneEmitters", sceneIndex);
 
     const extension = sceneDef.extensions[this.name];
     const audioEmitterIndices = extension.audioEmitters;
