@@ -10,38 +10,30 @@ export class GLTFAudioEmitterExtension {
     this.baseUrl = new URL(this.parser.options.path, window.location).href;
   }
 
-  loadAudioClip(audioClipIndex) {
+  loadAudioSource(audioSourceIndex) {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
-    const audioClipDef = extension.audioClips[audioClipIndex];
+    const audioSource = extension.audioSources[audioSourceIndex];
 
-    for (const source of audioClipDef.sources) {
-      if (this.testEl.canPlayType(source.mimeType)) {
-        if (source.uri) {
-          return new Promise((resolve, reject) => {
-            const el = document.createElement("audio");
+    if (audioSource.uri) {
+      return new Promise((resolve) => {
+        const el = document.createElement("audio");
 
-            el.src = new URL(source.uri, this.baseUrl).href;
+        el.src = new URL(audioSource.uri, this.baseUrl).href;
 
-            const onCanPlay = () => {
-              el.removeEventListener("canplay", onCanPlay);
-              resolve(el);
-            };
+        const onCanPlay = () => {
+          el.removeEventListener("canplay", onCanPlay);
+          resolve(el);
+        };
 
-            el.addEventListener("canplay", onCanPlay);
-          });
-        } else {
-          return this.parser.getDependency(
-            "bufferView",
-            source.bufferView
-          );
-        }
-      }
+        el.addEventListener("canplay", onCanPlay);
+      });
+    } else {
+      return this.parser.getDependency(
+        "bufferView",
+        audioSource.bufferView
+      );
     }
-
-    return Promise.reject(
-      new Error(`Unsupported audio clip ${audioClipDef.name}`)
-    );
   }
 
   loadAudioEmitter(audioEmitterIndex) {
@@ -67,13 +59,15 @@ export class GLTFAudioEmitterExtension {
     }
 
     obj.name = audioEmitterDef.name || "";
-    obj.setVolume(audioEmitterDef.volume !== undefined ? audioEmitterDef.volume : 1);
+    obj.gain.gain.value = audioEmitterDef.gain !== undefined ? audioEmitterDef.gain : 1
 
-    return this.loadAudioClip(audioEmitterDef.clip).then((clip) => {
-      if (clip instanceof HTMLMediaElement) {
-        obj.setMediaElementSource(clip);
+    console.log(obj, obj.gain, audioEmitterDef.gain);
+
+    return this.loadAudioSource(audioEmitterDef.source).then((source) => {
+      if (source instanceof HTMLMediaElement) {
+        obj.setMediaElementSource(source);
       } else {
-        obj.setBuffer(clip);
+        obj.setBuffer(source);
       }
 
       if (obj.hasPlaybackControl) {

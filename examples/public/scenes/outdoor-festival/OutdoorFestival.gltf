@@ -1,6 +1,6 @@
 {
   "asset": {
-    "generator": "glTF-Transform v0.12.10",
+    "generator": "glTF-Transform v0.12.11",
     "version": "2.0"
   },
   "accessors": [
@@ -77481,10 +77481,7 @@
         0
       ],
       "extensions": {
-        "MOZ_hubs_components": {},
-        "OMI_audio_emitter": {
-          "audioEmitter": 2
-        }
+        "MOZ_hubs_components": {}
       }
     },
     {
@@ -81219,7 +81216,14 @@
         1152,
         1155,
         1156
-      ]
+      ],
+      "extensions": {
+        "OMI_audio_emitter": {
+          "audioEmitters": [
+            2
+          ]
+        }
+      }
     }
   ],
   "scene": 0,
@@ -81230,100 +81234,69 @@
   ],
   "extensions": {
     "OMI_audio_emitter": {
-      "audioClips": [
+      "audioSources": [
         {
-          "sources": [
-            {
-              "mimeType": "audio/mpeg",
-              "uri": "OutdoorFestival_audio0.mp3"
-            }
-          ]
+          "uri": "OutdoorFestival_audio0.mp3"
         },
         {
-          "sources": [
-            {
-              "mimeType": "audio/mpeg",
-              "uri": "OutdoorFestival_audio1.mp3"
-            }
-          ]
+          "uri": "OutdoorFestival_audio1.mp3"
         },
         {
-          "sources": [
-            {
-              "mimeType": "audio/mpeg",
-              "uri": "OutdoorFestival_audio2.mp3"
-            }
-          ]
+          "uri": "OutdoorFestival_audio2.mp3"
         },
         {
-          "sources": [
-            {
-              "mimeType": "audio/mpeg",
-              "uri": "OutdoorFestival_audio3.mp3"
-            }
-          ]
+          "uri": "OutdoorFestival_audio3.mp3"
         }
       ],
       "audioEmitters": [
         {
           "type": "positional",
-          "volume": 0.15000000596046448,
+          "gain": 0.15000000596046448,
           "loop": true,
           "autoPlay": true,
-          "muted": false,
+          "source": 0,
           "coneInnerAngle": 6.283185307179586,
           "coneOuterAngle": 6.283185307179586,
           "coneOuterGain": 0,
           "distanceModel": "inverse",
           "maxDistance": 10000,
           "refDistance": 20,
-          "rolloffFactor": 1,
-          "clip": 0
+          "rolloffFactor": 1
         },
         {
           "type": "positional",
-          "volume": 3,
+          "gain": 3,
           "loop": true,
           "autoPlay": true,
-          "muted": false,
+          "source": 1,
           "coneInnerAngle": 6.283185307179586,
           "coneOuterAngle": 6.283185307179586,
           "coneOuterGain": 0,
           "distanceModel": "inverse",
           "maxDistance": 500,
           "refDistance": 1,
-          "rolloffFactor": 0.9900000095367432,
-          "clip": 1
+          "rolloffFactor": 0.9900000095367432
         },
         {
           "type": "global",
-          "volume": 0.032999999821186066,
+          "gain": 0.032999999821186066,
           "loop": true,
           "autoPlay": true,
-          "muted": false,
-          "coneInnerAngle": 0,
-          "coneOuterAngle": 0,
-          "coneOuterGain": null,
-          "distanceModel": "inverse",
-          "maxDistance": null,
-          "refDistance": null,
-          "rolloffFactor": null,
-          "clip": 2
+          "source": 2
         },
         {
           "type": "positional",
-          "volume": 0.5,
+          "gain": 0.5,
           "loop": true,
           "autoPlay": true,
-          "muted": false,
+          "source": 3,
           "coneInnerAngle": 6.283185307179586,
           "coneOuterAngle": 6.283185307179586,
           "coneOuterGain": 0,
           "distanceModel": "inverse",
           "maxDistance": 33,
           "refDistance": 3,
-          "rolloffFactor": 1,
-          "clip": 3
+          "rolloffFactor": 1
         }
       ]
     }

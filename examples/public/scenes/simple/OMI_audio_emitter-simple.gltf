@@ -9,46 +9,34 @@
     ],
     "extensions": {
         "OMI_audio_emitter": {
-            "audioClips": [
+            "audioSources": [
                 {
                     "name": "ambient",
-                    "sources": [
-                        {
-                            "mimeType": "audio/wav",
-                            "uri": "./ambient.wav"
-                        }
-                    ]
+                    "uri": "./ambient.mp3"
                 },
                 {
                     "name": "talking",
-                    "sources": [
-                        {
-                            "mimeType": "audio/wav",
-                            "uri": "./talking.wav"
-                        }
-                    ]
+                    "uri": "./talking.mp3"
                 }
             ],
             "audioEmitters": [
                 {
                     "name": "ambient emitter",
                     "type": "global",
-                    "volume": 1,
+                    "gain": 1,
                     "loop": true,
                     "autoPlay": true,
-                    "muted": false,
-                    "clip": 0
+                    "source": 0
                 },
                 {
                     "name": "talking emitter",
                     "type": "positional",
-                    "volume": 0.8,
+                    "gain": 0.8,
                     "loop": true,
                     "autoPlay": true,
-                    "muted": false,
-                    "clip": 1,
-                    "coneInnerAngle": 360,
-                    "coneOuterAngle": 360,
+                    "source": 1,
+                    "coneInnerAngle": 6.283185307179586,
+                    "coneOuterAngle": 6.283185307179586,
                     "coneOuterGain": 0,
                     "distanceModel": "inverse",
                     "maxDistance": 10,
