@@ -38,15 +38,25 @@
         transform: translate(-50%, -50%);
         cursor: pointer;
       }
+
+      input {
+        opacity: 0;
+      }
     </style>
-    <script type="module" crossorigin src="/three-omi/assets/examples/audio-emitter.html.a38e2563.js"></script>
+    <script type="module" crossorigin src="/three-omi/assets/examples/viewer.html.ae458b28.js"></script>
     <link rel="modulepreload" href="/three-omi/assets/vendor.f074ed68.js">
     <link rel="modulepreload" href="/three-omi/assets/OMI_audio_emitter.ebcfae8b.js">
     <link rel="stylesheet" href="/three-omi/assets/styles.3ebd42f2.css">
   </head>
   <body>
     <canvas id="canvas"></canvas>
+    <input type="file" id="fileInput" />
     <button id="load-button">Load Example</button>
+    <div class="controls hide">
+      <p>
+        <b>Drag and drop a glTF 2.0 file or folder here</b>
+      </p>
+    </div>
     
   </body>
 </html>
