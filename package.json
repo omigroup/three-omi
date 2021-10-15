@@ -7,7 +7,7 @@
     "url": "https://omigroup.org"
   },
   "repository": {
-    "type" : "git",
+    "type": "git",
     "url": "https://github.com/omigroup/three-omi"
   },
   "files": [
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@types/three": "^0.133.1",
+    "simple-dropzone": "^0.8.1",
     "three": "^0.130.1",
     "vite": "^2.4.4"
   },

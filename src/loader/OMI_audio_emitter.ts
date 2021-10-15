@@ -1,49 +1,90 @@
-import { Audio, PositionalAudio, AudioListener, MathUtils, Scene, Object3D } from "three";
+import {
+  Audio,
+  PositionalAudio,
+  AudioListener,
+  MathUtils,
+  Object3D,
+  AudioLoader,
+  Vector3,
+  Quaternion,
+} from "three";
 import { GLTFParser, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+
+// From Three.js GLTFLoader
+// TODO: Move to LoaderUtils so we can import it directly
+function resolveURL(url: string, path: string) {
+  // Invalid URL
+  if (typeof url !== "string" || url === "") return "";
+
+  // Host Relative URL
+  if (/^https?:\/\//i.test(path) && /^\//.test(url)) {
+    path = path.replace(/(^https?:\/\/[^\/]+).*/i, "$1");
+  }
+
+  // Absolute URL http://,https://,//
+  if (/^(https?:)?\/\//i.test(url)) return url;
+
+  // Data URI
+  if (/^data:.*,.*$/i.test(url)) return url;
+
+  // Blob URL
+  if (/^blob:.*$/i.test(url)) return url;
+
+  // Relative URL
+  return path + url;
+}
 
 export class GLTFAudioEmitterExtension {
   public name: string;
   public listener: AudioListener;
-  public audioEmitters: { autoPlay: boolean, obj: Audio<GainNode | PannerNode> }[];
+  public autoPlay: boolean;
+  public audioEmitters: {
+    autoPlay: boolean;
+    obj: Audio<GainNode | PannerNode>;
+  }[];
 
   private parser: GLTFParser;
-  private baseUrl: string;
+  private audioLoader: AudioLoader;
 
   constructor(parser: GLTFParser, listener: AudioListener) {
     this.name = "OMI_audio_emitter";
     this.parser = parser;
     this.listener = listener;
     this.audioEmitters = [];
-    this.baseUrl = new URL((this.parser as unknown as any).options.path, window.location.href).href;
+    this.autoPlay = true;
+    this.audioLoader = new AudioLoader(
+      (this.parser as unknown as any).options.manager
+    );
   }
 
-  loadAudioSource(audioSourceIndex: number): Promise<ArrayBuffer | HTMLAudioElement> {
+  loadAudioSource(
+    audioSourceIndex: number
+  ): Promise<AudioBuffer> {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
     const audioSource = extension.audioSources[audioSourceIndex];
 
     if (audioSource.uri) {
-      return new Promise((resolve) => {
-        const el = document.createElement("audio");
-
-        el.src = new URL(audioSource.uri, this.baseUrl).href;
-
-        const onCanPlay = () => {
-          el.removeEventListener("canplay", onCanPlay);
-          resolve(el);
-        };
-
-        el.addEventListener("canplay", onCanPlay);
-      });
-    } else {
-      return this.parser.getDependency(
-        "bufferView",
-        audioSource.bufferView
+      return this.audioLoader.loadAsync(
+        resolveURL(
+          audioSource.uri,
+          (this.parser as unknown as any).options.path
+        )
       );
+    } else {
+      return this.parser
+        .getDependency("bufferView", audioSource.bufferView)
+        .then((buffer: ArrayBuffer) => {
+          const bufferCopy = buffer.slice(0) ;
+          const context = this.listener.context;
+          return context.decodeAudioData(bufferCopy);
+        });
     }
   }
 
-  loadAudioEmitter(audioEmitterIndex: number): Promise<Audio<GainNode | PannerNode>> {
+  loadAudioEmitter(
+    audioEmitterIndex: number
+  ): Promise<Audio<GainNode | PannerNode>> {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
     const audioEmitterDef = extension.audioEmitters[audioEmitterIndex];
@@ -54,20 +95,43 @@ export class GLTFAudioEmitterExtension {
       obj = new Audio(this.listener);
     } else {
       const audio = new PositionalAudio(this.listener);
-      audio.setRefDistance(audioEmitterDef.refDistance !== undefined ? audioEmitterDef.refDistance : 1);
-      audio.setRolloffFactor(audioEmitterDef.rolloffFactor !== undefined ? audioEmitterDef.rolloffFactor : 1);
+      audio.setRefDistance(
+        audioEmitterDef.refDistance !== undefined
+          ? audioEmitterDef.refDistance
+          : 1
+      );
+      audio.setRolloffFactor(
+        audioEmitterDef.rolloffFactor !== undefined
+          ? audioEmitterDef.rolloffFactor
+          : 1
+      );
       audio.setDistanceModel(audioEmitterDef.distanceModel || "inverse");
-      audio.setMaxDistance(audioEmitterDef.maxDistance !== undefined ? audioEmitterDef.maxDistance : 10000);
+      audio.setMaxDistance(
+        audioEmitterDef.maxDistance !== undefined
+          ? audioEmitterDef.maxDistance
+          : 10000
+      );
       audio.setDirectionalCone(
-        MathUtils.radToDeg(audioEmitterDef.coneInnerAngle !== undefined ? audioEmitterDef.coneInnerAngle : Math.PI * 2),
-        MathUtils.radToDeg(audioEmitterDef.coneOuterAngle !== undefined ? audioEmitterDef.coneOuterAngle : Math.PI * 2),
-        audioEmitterDef.coneOuterGain !== undefined ? audioEmitterDef.coneOuterGain : 0
+        MathUtils.radToDeg(
+          audioEmitterDef.coneInnerAngle !== undefined
+            ? audioEmitterDef.coneInnerAngle
+            : Math.PI * 2
+        ),
+        MathUtils.radToDeg(
+          audioEmitterDef.coneOuterAngle !== undefined
+            ? audioEmitterDef.coneOuterAngle
+            : Math.PI * 2
+        ),
+        audioEmitterDef.coneOuterGain !== undefined
+          ? audioEmitterDef.coneOuterGain
+          : 0
       );
       obj = audio;
     }
 
     obj.name = audioEmitterDef.name || "";
-    obj.gain.gain.value = audioEmitterDef.gain !== undefined ? audioEmitterDef.gain : 1
+    obj.gain.gain.value =
+      audioEmitterDef.gain !== undefined ? audioEmitterDef.gain : 1;
 
     return this.loadAudioSource(audioEmitterDef.source).then((source) => {
       if (source instanceof HTMLMediaElement) {
@@ -79,7 +143,8 @@ export class GLTFAudioEmitterExtension {
       if (obj.hasPlaybackControl) {
         obj.setLoop(!!audioEmitterDef.loop);
       } else {
-        (obj.source as unknown as any).mediaElement.loop = !!audioEmitterDef.loop;
+        (obj.source as unknown as any).mediaElement.loop =
+          !!audioEmitterDef.loop;
       }
 
       this.audioEmitters.push({ autoPlay: !!audioEmitterDef.autoPlay, obj });
@@ -88,7 +153,9 @@ export class GLTFAudioEmitterExtension {
     });
   }
 
-  createNodeAttachment(nodeIndex: number): Promise<Audio<GainNode | PannerNode>> | null {
+  createNodeAttachment(
+    nodeIndex: number
+  ): Promise<Audio<GainNode | PannerNode>> | null {
     const json = this.parser.json;
     const nodeDef = json.nodes[nodeIndex];
 
@@ -129,32 +196,45 @@ export class GLTFAudioEmitterExtension {
       const pending = gltf.scenes.map((scene, sceneIndex) =>
         this.loadSceneEmitters(sceneIndex, scene)
       );
-
       return Promise.all(pending).then(() => {
-        gltf.scene.traverse((obj) => {
-          if (obj.type !== "Audio") {
-            return;
-          }
-
-          const emitter = this.audioEmitters.find(
-            (audioEmitter) => audioEmitter.obj === obj
-          );
-
-          if (!emitter) {
-            return;
-          }
-
-          if (emitter.autoPlay) {
-            if (emitter.obj.hasPlaybackControl) {
-              emitter.obj.play();
-            } else {
-              (emitter.obj!.source! as unknown as any).mediaElement.play();
-            }
-          }
-        });
-
-        return gltf;
+        if (this.autoPlay) {
+          this.startAutoPlayEmitters();
+        }
       });
     });
+  }
+
+  startAutoPlayEmitters(): void {
+    for (const emitter of this.audioEmitters) {
+      if (!emitter.autoPlay) {
+        return;
+      }
+
+      const panner = (emitter.obj as PositionalAudio).panner;
+
+      // HACK: Update PositionalAudio transforms using value instead of linearRampToValueAtTime
+      // to avoid a bug where the transform is set to the origin for a split second at load.
+      if (panner) {
+        emitter.obj.updateMatrixWorld(true);
+        const position = new Vector3();
+        const quaternion = new Quaternion();
+        const scale = new Vector3();
+        const orientation = new Vector3();
+        emitter.obj.matrixWorld.decompose(position, quaternion, scale);
+        orientation.set( 0, 0, 1 ).applyQuaternion( quaternion );
+        panner.positionX.value = position.x;
+        panner.positionY.value = position.y;
+        panner.positionZ.value = position.z;
+        panner.orientationX.value = orientation.x;
+        panner.orientationY.value = orientation.y;
+        panner.orientationZ.value = orientation.z;
+      }
+
+      if (emitter.obj.hasPlaybackControl) {
+        emitter.obj.play();
+      } else {
+        (emitter.obj!.source! as unknown as any).mediaElement.play();
+      }
+    }
   }
 }
