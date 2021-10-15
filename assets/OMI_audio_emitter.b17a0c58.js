@@ -5,8 +5,7 @@ class GLTFAudioEmitterExtension {
     this.parser = parser;
     this.listener = listener;
     this.audioEmitters = [];
-    this.testEl = document.createElement("audio");
-    this.baseUrl = new URL(this.parser.options.path, window.location).href;
+    this.baseUrl = new URL(this.parser.options.path, window.location.href).href;
   }
   loadAudioSource(audioSourceIndex) {
     const json = this.parser.json;
@@ -34,16 +33,16 @@ class GLTFAudioEmitterExtension {
     if (audioEmitterDef.type === "global") {
       obj = new Audio(this.listener);
     } else {
-      obj = new PositionalAudio(this.listener);
-      obj.setRefDistance(audioEmitterDef.refDistance !== void 0 ? audioEmitterDef.refDistance : 1);
-      obj.setRolloffFactor(audioEmitterDef.rolloffFactor !== void 0 ? audioEmitterDef.rolloffFactor : 1);
-      obj.setDistanceModel(audioEmitterDef.distanceModel || "inverse");
-      obj.setMaxDistance(audioEmitterDef.maxDistance !== void 0 ? audioEmitterDef.maxDistance : 1e4);
-      obj.setDirectionalCone(MathUtils.radToDeg(audioEmitterDef.coneInnerAngle !== void 0 ? audioEmitterDef.coneInnerAngle : Math.PI * 2), MathUtils.radToDeg(audioEmitterDef.coneOuterAngle !== void 0 ? audioEmitterDef.coneOuterAngle : Math.PI * 2), audioEmitterDef.coneOuterGain !== void 0 ? audioEmitterDef.coneOuterGain : 0);
+      const audio = new PositionalAudio(this.listener);
+      audio.setRefDistance(audioEmitterDef.refDistance !== void 0 ? audioEmitterDef.refDistance : 1);
+      audio.setRolloffFactor(audioEmitterDef.rolloffFactor !== void 0 ? audioEmitterDef.rolloffFactor : 1);
+      audio.setDistanceModel(audioEmitterDef.distanceModel || "inverse");
+      audio.setMaxDistance(audioEmitterDef.maxDistance !== void 0 ? audioEmitterDef.maxDistance : 1e4);
+      audio.setDirectionalCone(MathUtils.radToDeg(audioEmitterDef.coneInnerAngle !== void 0 ? audioEmitterDef.coneInnerAngle : Math.PI * 2), MathUtils.radToDeg(audioEmitterDef.coneOuterAngle !== void 0 ? audioEmitterDef.coneOuterAngle : Math.PI * 2), audioEmitterDef.coneOuterGain !== void 0 ? audioEmitterDef.coneOuterGain : 0);
+      obj = audio;
     }
     obj.name = audioEmitterDef.name || "";
     obj.gain.gain.value = audioEmitterDef.gain !== void 0 ? audioEmitterDef.gain : 1;
-    console.log(obj, obj.gain, audioEmitterDef.gain);
     return this.loadAudioSource(audioEmitterDef.source).then((source) => {
       if (source instanceof HTMLMediaElement) {
         obj.setMediaElementSource(source);
@@ -73,7 +72,7 @@ class GLTFAudioEmitterExtension {
     const json = this.parser.json;
     const sceneDef = json.scenes[sceneIndex];
     if (!sceneDef.extensions || !sceneDef.extensions[this.name]) {
-      return null;
+      return Promise.resolve(null);
     }
     const extension = sceneDef.extensions[this.name];
     const audioEmitterIndices = extension.audioEmitters;
@@ -89,7 +88,7 @@ class GLTFAudioEmitterExtension {
       const pending = gltf.scenes.map((scene, sceneIndex) => this.loadSceneEmitters(sceneIndex, scene));
       return Promise.all(pending).then(() => {
         gltf.scene.traverse((obj) => {
-          if (!obj.type === "Audio") {
+          if (obj.type !== "Audio") {
             return;
           }
           const emitter = this.audioEmitters.find((audioEmitter) => audioEmitter.obj === obj);
