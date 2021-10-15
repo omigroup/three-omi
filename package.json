@@ -6,6 +6,7 @@
   ],
   "main": "./dist/three-omi.cjs.js",
   "module": "./dist/three-omi.es.js",
+  "types": "./dist/three-omi.d.ts",
   "exports": {
     ".": {
       "import": "./dist/three-omi.es.js",
@@ -15,10 +16,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build-site": "vite build --mode site",
+    "build:types": "tsc --declaration --noEmit false --emitDeclarationOnly --strict false --outDir ./dist",
+    "build:site": "vite build --mode site",
     "preview-site": "vite preview"
   },
   "devDependencies": {
+    "@types/three": "^0.133.1",
     "three": "^0.130.1",
     "vite": "^2.4.4"
   },
