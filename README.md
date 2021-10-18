@@ -15,7 +15,6 @@ import { AudioListener } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { GLTFAudioEmitterExtension } from "three-omi";
 
-
 // The extension needs a reference to your player's AudioEmitter
 const audioListener = new AudioListener();
 
