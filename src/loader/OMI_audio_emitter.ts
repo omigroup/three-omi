@@ -40,7 +40,7 @@ export class GLTFAudioEmitterExtension {
   public autoPlay: boolean;
   public audioEmitters: {
     autoPlay: boolean;
-    obj: Audio<GainNode | PannerNode>;
+    obj: Audio<GainNode | PannerNode> | PositionalAudio;
   }[];
 
   private parser: GLTFParser;
@@ -84,12 +84,12 @@ export class GLTFAudioEmitterExtension {
 
   loadAudioEmitter(
     audioEmitterIndex: number
-  ): Promise<Audio<GainNode | PannerNode>> {
+  ): Promise<Audio<GainNode | PannerNode> | PositionalAudio> {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
     const audioEmitterDef = extension.audioEmitters[audioEmitterIndex];
 
-    let obj: Audio<GainNode | PannerNode>;
+    let obj: Audio<GainNode | PannerNode> | PositionalAudio;
 
     if (audioEmitterDef.type === "global") {
       obj = new Audio(this.listener);
@@ -134,28 +134,16 @@ export class GLTFAudioEmitterExtension {
       audioEmitterDef.gain !== undefined ? audioEmitterDef.gain : 1;
 
     return this.loadAudioSource(audioEmitterDef.source).then((source) => {
-      if (source instanceof HTMLMediaElement) {
-        obj.setMediaElementSource(source);
-      } else {
-        obj.setBuffer(source as unknown as AudioBuffer);
-      }
-
-      if (obj.hasPlaybackControl) {
-        obj.setLoop(!!audioEmitterDef.loop);
-      } else {
-        (obj.source as unknown as any).mediaElement.loop =
-          !!audioEmitterDef.loop;
-      }
-
+      obj.setBuffer(source);
+      obj.setLoop(!!audioEmitterDef.loop);
       this.audioEmitters.push({ autoPlay: !!audioEmitterDef.autoPlay, obj });
-
       return obj;
     });
   }
 
   createNodeAttachment(
     nodeIndex: number
-  ): Promise<Audio<GainNode | PannerNode>> | null {
+  ): Promise<Audio<GainNode | PannerNode> | PositionalAudio> | null {
     const json = this.parser.json;
     const nodeDef = json.nodes[nodeIndex];
 
@@ -210,11 +198,10 @@ export class GLTFAudioEmitterExtension {
         return;
       }
 
-      const panner = (emitter.obj as PositionalAudio).panner;
-
       // HACK: Update PositionalAudio transforms using value instead of linearRampToValueAtTime
       // to avoid a bug where the transform is set to the origin for a split second at load.
-      if (panner) {
+      if ("panner" in emitter.obj) {
+        const panner = emitter.obj.panner;
         emitter.obj.updateMatrixWorld(true);
         const position = new Vector3();
         const quaternion = new Quaternion();
@@ -230,11 +217,7 @@ export class GLTFAudioEmitterExtension {
         panner.orientationZ.value = orientation.z;
       }
 
-      if (emitter.obj.hasPlaybackControl) {
-        emitter.obj.play();
-      } else {
-        (emitter.obj!.source! as unknown as any).mediaElement.play();
-      }
+      emitter.obj.play();
     }
   }
 }
