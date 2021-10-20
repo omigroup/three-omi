@@ -55,16 +55,8 @@ class GLTFAudioEmitterExtension {
     obj.name = audioEmitterDef.name || "";
     obj.gain.gain.value = audioEmitterDef.gain !== void 0 ? audioEmitterDef.gain : 1;
     return this.loadAudioSource(audioEmitterDef.source).then((source) => {
-      if (source instanceof HTMLMediaElement) {
-        obj.setMediaElementSource(source);
-      } else {
-        obj.setBuffer(source);
-      }
-      if (obj.hasPlaybackControl) {
-        obj.setLoop(!!audioEmitterDef.loop);
-      } else {
-        obj.source.mediaElement.loop = !!audioEmitterDef.loop;
-      }
+      obj.setBuffer(source);
+      obj.setLoop(!!audioEmitterDef.loop);
       this.audioEmitters.push({ autoPlay: !!audioEmitterDef.autoPlay, obj });
       return obj;
     });
@@ -109,8 +101,8 @@ class GLTFAudioEmitterExtension {
       if (!emitter.autoPlay) {
         return;
       }
-      const panner = emitter.obj.panner;
-      if (panner) {
+      if ("panner" in emitter.obj) {
+        const panner = emitter.obj.panner;
         emitter.obj.updateMatrixWorld(true);
         const position = new Vector3();
         const quaternion = new Quaternion();
@@ -125,11 +117,7 @@ class GLTFAudioEmitterExtension {
         panner.orientationY.value = orientation.y;
         panner.orientationZ.value = orientation.z;
       }
-      if (emitter.obj.hasPlaybackControl) {
-        emitter.obj.play();
-      } else {
-        emitter.obj.source.mediaElement.play();
-      }
+      emitter.obj.play();
     }
   }
 }

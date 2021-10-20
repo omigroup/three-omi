@@ -1,5 +1,5 @@
 /* empty css                  */import { S as Scene, P as PerspectiveCamera, A as AudioListener, O as OrbitControls, a as AnimationMixer, x as xe, g as LoaderUtils, h as LoadingManager, G as GLTFLoader, B as Box3, V as Vector3, L as LoopRepeat, C as Clock, W as WebGLRenderer, b as ACESFilmicToneMapping, s as sRGBEncoding, T as Texture } from "../vendor.f074ed68.js";
-import { G as GLTFAudioEmitterExtension } from "../OMI_audio_emitter.ebcfae8b.js";
+import { G as GLTFAudioEmitterExtension } from "../OMI_audio_emitter.0a8d7409.js";
 async function main() {
   const canvas = document.getElementById("canvas");
   const fileInput = document.getElementById("fileInput");
