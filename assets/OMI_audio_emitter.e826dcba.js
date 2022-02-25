@@ -19,7 +19,7 @@ class GLTFAudioEmitterExtension {
     this.parser = parser;
     this.listener = listener;
     this.audioEmitters = [];
-    this.autoPlay = true;
+    this.playing = true;
     this.audioLoader = new AudioLoader(this.parser.options.manager);
   }
   loadAudioSource(audioSourceIndex) {
@@ -57,7 +57,7 @@ class GLTFAudioEmitterExtension {
     return this.loadAudioSource(audioEmitterDef.source).then((source) => {
       obj.setBuffer(source);
       obj.setLoop(!!audioEmitterDef.loop);
-      this.audioEmitters.push({ autoPlay: !!audioEmitterDef.autoPlay, obj });
+      this.audioEmitters.push({ playing: !!audioEmitterDef.playing, obj });
       return obj;
     });
   }
@@ -90,15 +90,15 @@ class GLTFAudioEmitterExtension {
     return Promise.resolve(result).then((gltf) => {
       const pending = gltf.scenes.map((scene, sceneIndex) => this.loadSceneEmitters(sceneIndex, scene));
       return Promise.all(pending).then(() => {
-        if (this.autoPlay) {
-          this.startAutoPlayEmitters();
+        if (this.playing) {
+          this.startPlayingEmitters();
         }
       });
     });
   }
-  startAutoPlayEmitters() {
+  startPlayingEmitters() {
     for (const emitter of this.audioEmitters) {
-      if (!emitter.autoPlay) {
+      if (!emitter.playing) {
         return;
       }
       if ("panner" in emitter.obj) {
