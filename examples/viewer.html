@@ -73,7 +73,7 @@
       import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
       import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
       import { SimpleDropzone } from "simple-dropzone";
-      import { GLTFAudioEmitterExtension } from "../src/three-omi";
+      import { GLTFLoaderAudioEmitterExtension } from "../src/three-omi";
 
       async function main() {
         const canvas = document.getElementById("canvas");
@@ -183,7 +183,7 @@
 
 
           const gltfLoader = new GLTFLoader(manager);
-          gltfLoader.register(parser => new GLTFAudioEmitterExtension(parser, audioListener));
+          gltfLoader.register(parser => new GLTFLoaderAudioEmitterExtension(parser, audioListener));
           const gltf = await gltfLoader.loadAsync(fileUrl);
 
           gltfScene = gltf.scene;

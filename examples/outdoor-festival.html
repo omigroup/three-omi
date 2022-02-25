@@ -76,7 +76,7 @@
       } from "three";
       import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
       import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
-      import { GLTFAudioEmitterExtension } from "../src/three-omi";
+      import { GLTFLoaderAudioEmitterExtension } from "../src/three-omi";
 
       async function main() {
         const canvas = document.getElementById("canvas");
@@ -112,7 +112,7 @@
         const animationMixer = new AnimationMixer(scene);
 
         const gltfLoader = new GLTFLoader();
-        gltfLoader.register(parser => new GLTFAudioEmitterExtension(parser, audioListener));
+        gltfLoader.register(parser => new GLTFLoaderAudioEmitterExtension(parser, audioListener));
         const { scene: gltfScene, animations } = await gltfLoader
           .loadAsync("../scenes/outdoor-festival/OutdoorFestival.gltf");
 

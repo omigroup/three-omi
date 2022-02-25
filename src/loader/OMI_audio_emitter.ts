@@ -34,7 +34,7 @@ function resolveURL(url: string, path: string) {
   return path + url;
 }
 
-export class GLTFAudioEmitterExtension {
+export class GLTFLoaderAudioEmitterExtension {
   public name: string;
   public listener: AudioListener;
   public autoPlay: boolean;
