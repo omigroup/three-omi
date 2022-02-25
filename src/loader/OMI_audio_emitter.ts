@@ -37,9 +37,9 @@ function resolveURL(url: string, path: string) {
 export class GLTFAudioEmitterExtension {
   public name: string;
   public listener: AudioListener;
-  public autoPlay: boolean;
+  public playing: boolean;
   public audioEmitters: {
-    autoPlay: boolean;
+    playing: boolean;
     obj: Audio<GainNode | PannerNode> | PositionalAudio;
   }[];
 
@@ -51,7 +51,7 @@ export class GLTFAudioEmitterExtension {
     this.parser = parser;
     this.listener = listener;
     this.audioEmitters = [];
-    this.autoPlay = true;
+    this.playing = true;
     this.audioLoader = new AudioLoader(
       (this.parser as unknown as any).options.manager
     );
@@ -136,7 +136,7 @@ export class GLTFAudioEmitterExtension {
     return this.loadAudioSource(audioEmitterDef.source).then((source) => {
       obj.setBuffer(source);
       obj.setLoop(!!audioEmitterDef.loop);
-      this.audioEmitters.push({ autoPlay: !!audioEmitterDef.autoPlay, obj });
+      this.audioEmitters.push({ playing: !!audioEmitterDef.playing, obj });
       return obj;
     });
   }
@@ -185,16 +185,16 @@ export class GLTFAudioEmitterExtension {
         this.loadSceneEmitters(sceneIndex, scene)
       );
       return Promise.all(pending).then(() => {
-        if (this.autoPlay) {
-          this.startAutoPlayEmitters();
+        if (this.playing) {
+          this.startPlayingEmitters();
         }
       });
     });
   }
 
-  startAutoPlayEmitters(): void {
+  startPlayingEmitters(): void {
     for (const emitter of this.audioEmitters) {
-      if (!emitter.autoPlay) {
+      if (!emitter.playing) {
         return;
       }
 
