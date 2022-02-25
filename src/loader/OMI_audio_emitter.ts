@@ -29,9 +29,7 @@ export class GLTFAudioEmitterExtension {
     this.listener = listener;
     this.audioEmitters = [];
     this.playing = true;
-    this.audioLoader = new AudioLoader(
-      (this.parser as unknown as any).options.manager
-    );
+    this.audioLoader = new AudioLoader(this.parser.options.manager);
   }
 
   loadAudioSource(
@@ -45,7 +43,7 @@ export class GLTFAudioEmitterExtension {
       return this.audioLoader.loadAsync(
         LoaderUtils.resolveURL(
           audioSource.uri,
-          (this.parser as unknown as any).options.path
+          this.parser.options.path
         )
       );
     } else {
