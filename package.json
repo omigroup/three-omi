@@ -33,6 +33,7 @@
     "@types/three": "^0.137.0",
     "simple-dropzone": "^0.8.1",
     "three": "^0.137.0",
+    "typescript": "^4.5.5",
     "vite": "^2.4.4"
   },
   "peerDependencies": {
