@@ -53,35 +53,88 @@
         sRGBEncoding,
         AnimationMixer,
         LoopRepeat,
-        Clock
+        Clock,
+        Audio,
+        PositionalAudio,
+        PlaneBufferGeometry,
+        SphereBufferGeometry,
+        BoxBufferGeometry,
+        MeshBasicMaterial,
+        Mesh,
+        AudioLoader,
       } from "three";
-      import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-      import { GLTFLoaderAudioEmitterExtension } from "../src/three-omi";
+      import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
+      import { GLTFExporterAudioEmitterExtension } from "../src/three-omi";
 
       async function main() {
         const scene = new Scene();
+
         const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.001, 1000);
-        camera.position.set(0, 1.6, 0);
+        camera.position.set(0, 1.6, 5);
         scene.add(camera);
         const audioListener = new AudioListener();
         camera.add(audioListener);
 
-        const animationMixer = new AnimationMixer(scene);
+        scene.add(
+          new Mesh(
+            new PlaneBufferGeometry(10, 10).rotateX(-Math.PI / 2),
+            new MeshBasicMaterial({ color: 0xFFFFFF })
+          )
+        );
 
-        const gltfLoader = new GLTFLoader();
-        gltfLoader.register(parser => new GLTFLoaderAudioEmitterExtension(parser, audioListener));
-        const { scene: gltfScene, animations } = await gltfLoader
-          .loadAsync("../scenes/simple/OMI_audio_emitter-simple.gltf");
+        const box = new Mesh(
+          new BoxBufferGeometry(1, 1, 1),
+          new MeshBasicMaterial({ color: 0xFF0000 })
+        );
+        box.position.set(0, 0.5, 0);
+        scene.add(box);
 
-        scene.add(gltfScene);
+        const sphere = new Mesh(
+          new SphereBufferGeometry(1),
+          new MeshBasicMaterial({ color: 0x0000FF })
+        );
+        sphere.position.set(2, 0.5, 0);
+        scene.add(sphere);
 
-        for (const clip of animations) {
-          const action = animationMixer.clipAction(clip, gltfScene);
-          action.loop = LoopRepeat;
-          action.play();
-        }
+        const ambientAudio = new Audio(audioListener);
+        const ambientAudioBuffer = await new AudioLoader().loadAsync("../scenes/simple/ambient.mp3");
+        ambientAudio.setBuffer(ambientAudioBuffer);
+        ambientAudio.setLoop(true);
+        ambientAudio.setVolume(0.5);
+        ambientAudio.play();
+        scene.add(ambientAudio);
 
-        const clock = new Clock();
+        const talkingAudio = new PositionalAudio(audioListener);
+        const talkingAudioBuffer = await new AudioLoader().loadAsync("../scenes/simple/talking.mp3");
+        talkingAudio.setBuffer(talkingAudioBuffer);
+        talkingAudio.setLoop(true);
+        talkingAudio.setVolume(0.5);
+        talkingAudio.play();
+        sphere.add(talkingAudio);
+
+        const encodeMp3 = async (buffer) => {
+          
+        };
+
+        const exportButton = document.createElement("button");
+        exportButton.style.position = "absolute";
+        exportButton.innerText = "Export GLTF";
+        exportButton.addEventListener("click", () => {
+          const gltfExporter = new GLTFExporter();
+          gltfExporter.register(writer => new GLTFExporterAudioEmitterExtension(writer, encodeMp3));
+          gltfExporter.parse(scene, (buffer) => {
+            const blob = new Blob([buffer], { type: "application/octet-stream" });
+            const link = document.createElement("a");
+			      link.style.display = "none";
+			      document.body.appendChild(link);
+            link.href = URL.createObjectURL(blob);
+            link.download = "scene.glb";
+            link.click();
+            link.remove();
+          }, { binary: true });
+        });
+        document.body.appendChild(exportButton);
+
         const canvas = document.getElementById("canvas");
         const renderer = new WebGLRenderer({ antialias: true, canvas });
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -90,8 +143,6 @@
         renderer.toneMappingExposure = 1;
         renderer.outputEncoding = sRGBEncoding;
         renderer.setAnimationLoop(() => {
-          const dt = clock.getDelta();
-          animationMixer.update(dt);
           renderer.render(scene, camera);
         });
 

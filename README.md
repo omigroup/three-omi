@@ -13,13 +13,13 @@ npm install -S three three-omi
 ```js
 import { AudioListener } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { GLTFAudioEmitterExtension } from "three-omi";
+import { GLTFLoaderAudioEmitterExtension } from "three-omi";
 
 // The extension needs a reference to your player's AudioEmitter
 const audioListener = new AudioListener();
 
 const gltfLoader = new GLTFLoader();
-gltfLoader.register(parser => new GLTFAudioEmitterExtension(parser, audioListener));
+gltfLoader.register(parser => new GLTFLoaderAudioEmitterExtension(parser, audioListener));
 const { scene } = await gltfLoader.loadAsync("OutdoorFestival.gltf");
 
 
