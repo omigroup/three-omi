@@ -1,18 +1,4 @@
-import { c as AudioLoader, d as Audio, e as PositionalAudio, M as MathUtils, V as Vector3, Q as Quaternion } from "./vendor.81994d2e.js";
-function resolveURL(url, path) {
-  if (typeof url !== "string" || url === "")
-    return "";
-  if (/^https?:\/\//i.test(path) && /^\//.test(url)) {
-    path = path.replace(/(^https?:\/\/[^\/]+).*/i, "$1");
-  }
-  if (/^(https?:)?\/\//i.test(url))
-    return url;
-  if (/^data:.*,.*$/i.test(url))
-    return url;
-  if (/^blob:.*$/i.test(url))
-    return url;
-  return path + url;
-}
+import { c as AudioLoader, d as LoaderUtils, e as Audio, f as PositionalAudio, M as MathUtils, V as Vector3, Q as Quaternion } from "./vendor.cd9bd1df.js";
 class GLTFAudioEmitterExtension {
   constructor(parser, listener) {
     this.name = "OMI_audio_emitter";
@@ -27,7 +13,7 @@ class GLTFAudioEmitterExtension {
     const extension = json.extensions[this.name];
     const audioSource = extension.audioSources[audioSourceIndex];
     if (audioSource.uri) {
-      return this.audioLoader.loadAsync(resolveURL(audioSource.uri, this.parser.options.path));
+      return this.audioLoader.loadAsync(LoaderUtils.resolveURL(audioSource.uri, this.parser.options.path));
     } else {
       return this.parser.getDependency("bufferView", audioSource.bufferView).then((buffer) => {
         const bufferCopy = buffer.slice(0);

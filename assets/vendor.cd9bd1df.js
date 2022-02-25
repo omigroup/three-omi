@@ -28804,4 +28804,4 @@ var xe = function() {
     this._emit("droperror", { message: e3 });
   }, e2;
 }();
-export { AudioListener as A, Box3 as B, Clock as C, GLTFLoader as G, LoopRepeat as L, MathUtils as M, OrbitControls as O, PerspectiveCamera as P, Quaternion as Q, Scene as S, Texture as T, Vector3 as V, WebGLRenderer as W, AnimationMixer as a, ACESFilmicToneMapping as b, AudioLoader as c, Audio as d, PositionalAudio as e, PointerLockControls as f, LoaderUtils as g, LoadingManager as h, sRGBEncoding as s, xe as x };
+export { AudioListener as A, Box3 as B, Clock as C, GLTFLoader as G, LoopRepeat as L, MathUtils as M, OrbitControls as O, PerspectiveCamera as P, Quaternion as Q, Scene as S, Texture as T, Vector3 as V, WebGLRenderer as W, AnimationMixer as a, ACESFilmicToneMapping as b, AudioLoader as c, LoaderUtils as d, Audio as e, PositionalAudio as f, PointerLockControls as g, LoadingManager as h, sRGBEncoding as s, xe as x };
