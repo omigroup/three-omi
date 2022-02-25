@@ -7,32 +7,9 @@ import {
   AudioLoader,
   Vector3,
   Quaternion,
+  LoaderUtils,
 } from "three";
 import { GLTFParser, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-
-// From Three.js GLTFLoader
-// TODO: Move to LoaderUtils so we can import it directly
-function resolveURL(url: string, path: string) {
-  // Invalid URL
-  if (typeof url !== "string" || url === "") return "";
-
-  // Host Relative URL
-  if (/^https?:\/\//i.test(path) && /^\//.test(url)) {
-    path = path.replace(/(^https?:\/\/[^\/]+).*/i, "$1");
-  }
-
-  // Absolute URL http://,https://,//
-  if (/^(https?:)?\/\//i.test(url)) return url;
-
-  // Data URI
-  if (/^data:.*,.*$/i.test(url)) return url;
-
-  // Blob URL
-  if (/^blob:.*$/i.test(url)) return url;
-
-  // Relative URL
-  return path + url;
-}
 
 export class GLTFAudioEmitterExtension {
   public name: string;
@@ -66,7 +43,7 @@ export class GLTFAudioEmitterExtension {
 
     if (audioSource.uri) {
       return this.audioLoader.loadAsync(
-        resolveURL(
+        LoaderUtils.resolveURL(
           audioSource.uri,
           (this.parser as unknown as any).options.path
         )
