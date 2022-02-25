@@ -1,4 +1,4 @@
-import { c as AudioLoader, d as Audio, e as PositionalAudio, M as MathUtils, V as Vector3, Q as Quaternion } from "./vendor.f074ed68.js";
+import { c as AudioLoader, d as Audio, e as PositionalAudio, M as MathUtils, V as Vector3, Q as Quaternion } from "./vendor.81994d2e.js";
 function resolveURL(url, path) {
   if (typeof url !== "string" || url === "")
     return "";
