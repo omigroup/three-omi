@@ -83,6 +83,7 @@ const UnsignedShort4444Type = 1017;
 const UnsignedShort5551Type = 1018;
 const UnsignedInt248Type = 1020;
 const AlphaFormat = 1021;
+const RGBFormat = 1022;
 const RGBAFormat = 1023;
 const LuminanceFormat = 1024;
 const LuminanceAlphaFormat = 1025;
@@ -5071,7 +5072,6 @@ class Material extends EventDispatcher {
     this.clipShadows = false;
     this.shadowSide = null;
     this.colorWrite = true;
-    this.alphaWrite = true;
     this.precision = null;
     this.polygonOffset = false;
     this.polygonOffsetFactor = 0;
@@ -5274,7 +5274,6 @@ class Material extends EventDispatcher {
     data.depthTest = this.depthTest;
     data.depthWrite = this.depthWrite;
     data.colorWrite = this.colorWrite;
-    data.alphaWrite = this.alphaWrite;
     data.stencilWrite = this.stencilWrite;
     data.stencilWriteMask = this.stencilWriteMask;
     data.stencilFunc = this.stencilFunc;
@@ -5384,7 +5383,6 @@ class Material extends EventDispatcher {
     this.clipShadows = source.clipShadows;
     this.shadowSide = source.shadowSide;
     this.colorWrite = source.colorWrite;
-    this.alphaWrite = source.alphaWrite;
     this.precision = source.precision;
     this.polygonOffset = source.polygonOffset;
     this.polygonOffsetFactor = source.polygonOffsetFactor;
@@ -7285,7 +7283,7 @@ function WebGLAnimation() {
 }
 function WebGLAttributes(gl, capabilities) {
   const isWebGL2 = capabilities.isWebGL2;
-  const buffers = new WeakMap();
+  const buffers = /* @__PURE__ */ new WeakMap();
   function createBuffer(attribute, bufferType) {
     const array = attribute.array;
     const usage = attribute.usage;
@@ -7558,7 +7556,7 @@ const fragment$9 = "uniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float
 const vertex$8 = "#define MATCAP\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <color_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n	vViewPosition = - mvPosition.xyz;\n}";
 const fragment$8 = "#define MATCAP\nuniform vec3 diffuse;\nuniform float opacity;\nuniform sampler2D matcap;\nvarying vec3 vViewPosition;\n#include <common>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	vec3 viewDir = normalize( vViewPosition );\n	vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );\n	vec3 y = cross( viewDir, x );\n	vec2 uv = vec2( dot( x, normal ), dot( y, normal ) ) * 0.495 + 0.5;\n	#ifdef USE_MATCAP\n		vec4 matcapColor = texture2D( matcap, uv );\n	#else\n		vec4 matcapColor = vec4( vec3( mix( 0.2, 0.8, uv.y ) ), 1.0 );\n	#endif\n	vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
 const vertex$7 = "#define NORMAL\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	vViewPosition = - mvPosition.xyz;\n#endif\n}";
-const fragment$7 = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <packing>\n#include <uv_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	#include <logdepthbuf_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	gl_FragColor = vec4( packNormalToRGB( normal ), opacity );\n}";
+const fragment$7 = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <packing>\n#include <uv_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	#include <logdepthbuf_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	gl_FragColor = vec4( packNormalToRGB( normal ), opacity );\n	#ifdef OPAQUE\n		gl_FragColor.a = 1.0;\n	#endif\n}";
 const vertex$6 = "#define PHONG\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
 const fragment$6 = "#define PHONG\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_phong_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_phong_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
 const vertex$5 = "#define STANDARD\nvarying vec3 vViewPosition;\n#ifdef USE_TRANSMISSION\n	varying vec3 vWorldPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n#ifdef USE_TRANSMISSION\n	vWorldPosition = worldPosition.xyz;\n#endif\n}";
@@ -8716,7 +8714,7 @@ function WebGLClipping(properties) {
   }
 }
 function WebGLCubeMaps(renderer) {
-  let cubemaps = new WeakMap();
+  let cubemaps = /* @__PURE__ */ new WeakMap();
   function mapTextureMapping(texture, mapping) {
     if (mapping === EquirectangularReflectionMapping) {
       texture.mapping = CubeReflectionMapping;
@@ -8758,7 +8756,7 @@ function WebGLCubeMaps(renderer) {
     }
   }
   function dispose() {
-    cubemaps = new WeakMap();
+    cubemaps = /* @__PURE__ */ new WeakMap();
   }
   return {
     get,
@@ -9414,7 +9412,7 @@ function _getCommonVertexShader() {
 	`;
 }
 function WebGLCubeUVMaps(renderer) {
-  let cubeUVmaps = new WeakMap();
+  let cubeUVmaps = /* @__PURE__ */ new WeakMap();
   let pmremGenerator = null;
   function get(texture) {
     if (texture && texture.isTexture) {
@@ -9470,7 +9468,7 @@ function WebGLCubeUVMaps(renderer) {
     }
   }
   function dispose() {
-    cubeUVmaps = new WeakMap();
+    cubeUVmaps = /* @__PURE__ */ new WeakMap();
     if (pmremGenerator !== null) {
       pmremGenerator.dispose();
       pmremGenerator = null;
@@ -9539,7 +9537,7 @@ function WebGLExtensions(gl) {
 }
 function WebGLGeometries(gl, attributes, info, bindingStates) {
   const geometries = {};
-  const wireframeAttributes = new WeakMap();
+  const wireframeAttributes = /* @__PURE__ */ new WeakMap();
   function onGeometryDispose(event) {
     const geometry = event.target;
     if (geometry.index !== null) {
@@ -9757,7 +9755,7 @@ function denormalize(morph, attribute) {
 function WebGLMorphtargets(gl, capabilities, textures) {
   const influencesList = {};
   const morphInfluences = new Float32Array(8);
-  const morphTextures = new WeakMap();
+  const morphTextures = /* @__PURE__ */ new WeakMap();
   const morph = new Vector3();
   const workInfluences = [];
   for (let i2 = 0; i2 < 8; i2++) {
@@ -9896,7 +9894,7 @@ function WebGLMorphtargets(gl, capabilities, textures) {
   };
 }
 function WebGLObjects(gl, geometries, attributes, info) {
-  let updateMap = new WeakMap();
+  let updateMap = /* @__PURE__ */ new WeakMap();
   function update(object) {
     const frame = info.render.frame;
     const geometry = object.geometry;
@@ -9917,7 +9915,7 @@ function WebGLObjects(gl, geometries, attributes, info) {
     return buffergeometry;
   }
   function dispose() {
-    updateMap = new WeakMap();
+    updateMap = /* @__PURE__ */ new WeakMap();
   }
   function onInstancedMeshDispose(event) {
     const instancedMesh = event.target;
@@ -10888,7 +10886,7 @@ function WebGLProgram(renderer, cacheKey, parameters, bindingStates) {
       parameters.toneMapping !== NoToneMapping ? ShaderChunk["tonemapping_pars_fragment"] : "",
       parameters.toneMapping !== NoToneMapping ? getToneMappingFunction("toneMapping", parameters.toneMapping) : "",
       parameters.dithering ? "#define DITHERING" : "",
-      parameters.alphaWrite ? "" : "#define OPAQUE",
+      parameters.transparent ? "" : "#define OPAQUE",
       ShaderChunk["encodings_pars_fragment"],
       getTexelEncodingFunction("linearToOutputTexel", parameters.outputEncoding),
       parameters.depthPacking ? "#define DEPTH_PACKING " + parameters.depthPacking : "",
@@ -11003,8 +11001,8 @@ function WebGLProgram(renderer, cacheKey, parameters, bindingStates) {
 let _id = 0;
 class WebGLShaderCache {
   constructor() {
-    this.shaderCache = new Map();
-    this.materialCache = new Map();
+    this.shaderCache = /* @__PURE__ */ new Map();
+    this.materialCache = /* @__PURE__ */ new Map();
   }
   update(material) {
     const vertexShader = material.vertexShader;
@@ -11045,7 +11043,7 @@ class WebGLShaderCache {
   _getShaderCacheForMaterial(material) {
     const cache = this.materialCache;
     if (cache.has(material) === false) {
-      cache.set(material, new Set());
+      cache.set(material, /* @__PURE__ */ new Set());
     }
     return cache.get(material);
   }
@@ -11174,9 +11172,9 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
       specularMap: !!material.specularMap,
       specularIntensityMap: !!material.specularIntensityMap,
       specularColorMap: !!material.specularColorMap,
+      transparent: material.transparent,
       alphaMap: !!material.alphaMap,
       alphaTest: useAlphaTest,
-      alphaWrite: material.alphaWrite || material.transparent,
       gradientMap: !!material.gradientMap,
       sheen: material.sheen > 0,
       sheenColorMap: !!material.sheenColorMap,
@@ -11277,7 +11275,6 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
     array.push(parameters.toneMapping);
     array.push(parameters.numClippingPlanes);
     array.push(parameters.numClipIntersection);
-    array.push(parameters.alphaWrite);
   }
   function getProgramCacheKeyBooleans(array, parameters) {
     _programLayers.disableAll();
@@ -11393,6 +11390,8 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
       _programLayers.enable(21);
     if (parameters.decodeVideoTexture)
       _programLayers.enable(22);
+    if (parameters.transparent)
+      _programLayers.enable(23);
     array.push(_programLayers.mask);
   }
   function getUniforms(material) {
@@ -11448,7 +11447,7 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
   };
 }
 function WebGLProperties() {
-  let properties = new WeakMap();
+  let properties = /* @__PURE__ */ new WeakMap();
   function get(object) {
     let map = properties.get(object);
     if (map === void 0) {
@@ -11464,7 +11463,7 @@ function WebGLProperties() {
     properties.get(object)[key] = value;
   }
   function dispose() {
-    properties = new WeakMap();
+    properties = /* @__PURE__ */ new WeakMap();
   }
   return {
     get,
@@ -11588,7 +11587,7 @@ function WebGLRenderList() {
   };
 }
 function WebGLRenderLists() {
-  let lists = new WeakMap();
+  let lists = /* @__PURE__ */ new WeakMap();
   function get(scene, renderCallDepth) {
     let list;
     if (lists.has(scene) === false) {
@@ -11605,7 +11604,7 @@ function WebGLRenderLists() {
     return list;
   }
   function dispose() {
-    lists = new WeakMap();
+    lists = /* @__PURE__ */ new WeakMap();
   }
   return {
     get,
@@ -11993,7 +11992,7 @@ function WebGLRenderState(extensions, capabilities) {
   };
 }
 function WebGLRenderStates(extensions, capabilities) {
-  let renderStates = new WeakMap();
+  let renderStates = /* @__PURE__ */ new WeakMap();
   function get(scene, renderCallDepth = 0) {
     let renderState;
     if (renderStates.has(scene) === false) {
@@ -12010,7 +12009,7 @@ function WebGLRenderStates(extensions, capabilities) {
     return renderState;
   }
   function dispose() {
-    renderStates = new WeakMap();
+    renderStates = /* @__PURE__ */ new WeakMap();
   }
   return {
     get,
@@ -12451,7 +12450,7 @@ function WebGLState(gl, extensions, capabilities) {
   const stencilBuffer = new StencilBuffer();
   let enabledCapabilities = {};
   let currentBoundFramebuffers = {};
-  let currentDrawbuffers = new WeakMap();
+  let currentDrawbuffers = /* @__PURE__ */ new WeakMap();
   let defaultDrawbuffers = [];
   let currentProgram = null;
   let currentBlendingEnabled = false;
@@ -12903,7 +12902,7 @@ function WebGLState(gl, extensions, capabilities) {
     currentTextureSlot = null;
     currentBoundTextures = {};
     currentBoundFramebuffers = {};
-    currentDrawbuffers = new WeakMap();
+    currentDrawbuffers = /* @__PURE__ */ new WeakMap();
     defaultDrawbuffers = [];
     currentProgram = null;
     currentBlendingEnabled = false;
@@ -12968,7 +12967,7 @@ function WebGLTextures(_gl, extensions, state, properties, capabilities, utils, 
   const maxSamples = capabilities.maxSamples;
   const hasMultisampledRenderToTexture = extensions.has("WEBGL_multisampled_render_to_texture");
   const MultisampledRenderToTextureExtension = hasMultisampledRenderToTexture ? extensions.get("WEBGL_multisampled_render_to_texture") : void 0;
-  const _videoTextures = new WeakMap();
+  const _videoTextures = /* @__PURE__ */ new WeakMap();
   let _canvas2;
   let useOffscreenCanvas = false;
   try {
@@ -13927,6 +13926,10 @@ function WebGLUtils(gl, extensions, capabilities) {
       return 34041;
     if (p2 === RedFormat)
       return 6403;
+    if (p2 === RGBFormat) {
+      console.warn("THREE.WebGLRenderer: THREE.RGBFormat has been removed. Use THREE.RGBAFormat instead. https://github.com/mrdoob/three.js/pull/23228");
+      return 6408;
+    }
     if (p2 === _SRGBAFormat) {
       extension = extensions.get("EXT_sRGB");
       if (extension !== null) {
@@ -14284,7 +14287,7 @@ class WebXRManager extends EventDispatcher {
     let initialRenderTarget = null;
     let newRenderTarget = null;
     const controllers = [];
-    const inputSourcesMap = new Map();
+    const inputSourcesMap = /* @__PURE__ */ new Map();
     const cameraL = new PerspectiveCamera();
     cameraL.layers.enable(1);
     cameraL.viewport = new Vector4();
@@ -15719,7 +15722,7 @@ function WebGLRenderer(parameters = {}) {
     materialProperties.envMap = (material.isMeshStandardMaterial ? cubeuvmaps : cubemaps).get(material.envMap || materialProperties.environment);
     if (programs === void 0) {
       material.addEventListener("dispose", onMaterialDispose);
-      programs = new Map();
+      programs = /* @__PURE__ */ new Map();
       materialProperties.programs = programs;
     }
     let program = programs.get(programCacheKey);
@@ -25421,7 +25424,7 @@ class GLTFParser {
     this.plugins = {};
     this.options = options;
     this.cache = new GLTFRegistry();
-    this.associations = new Map();
+    this.associations = /* @__PURE__ */ new Map();
     this.primitiveCache = {};
     this.meshCache = { refs: {}, uses: {} };
     this.cameraCache = { refs: {}, uses: {} };
@@ -25914,7 +25917,6 @@ class GLTFParser {
       materialParams.depthWrite = false;
     } else {
       materialParams.transparent = false;
-      materialParams.alphaWrite = false;
       if (alphaMode === ALPHA_MODES.MASK) {
         materialParams.alphaTest = materialDef.alphaCutoff !== void 0 ? materialDef.alphaCutoff : 0.5;
       }
@@ -26298,7 +26300,7 @@ class GLTFParser {
     }
     return Promise.all(pending).then(function() {
       const reduceAssociations = (node) => {
-        const reducedAssociations = new Map();
+        const reducedAssociations = /* @__PURE__ */ new Map();
         for (const [key, value] of parser.associations) {
           if (key instanceof Material || key instanceof Texture) {
             reducedAssociations.set(key, value);
@@ -28747,7 +28749,7 @@ var xe = function() {
         var i2 = n2.map(function(e4) {
           return e4.webkitGetAsEntry();
         });
-        i2[0].name.match(/\.zip$/) ? this._loadZip(n2[0].getAsFile()) : this._loadNextEntry(new Map(), i2);
+        i2[0].name.match(/\.zip$/) ? this._loadZip(n2[0].getAsFile()) : this._loadNextEntry(/* @__PURE__ */ new Map(), i2);
       } else
         t3.length === 1 && t3[0].name.match(/\.zip$/) && this._loadZip(t3[0]), this._emit("drop", { files: new Map(t3.map(function(e4) {
           return [e4.name, e4];
@@ -28762,7 +28764,7 @@ var xe = function() {
     if (t3.length === 1 && this._isZip(t3[0]))
       this._loadZip(t3[0]);
     else {
-      var n2 = new Map();
+      var n2 = /* @__PURE__ */ new Map();
       t3.forEach(function(e4) {
         return n2.set(e4.webkitRelativePath || e4.name, e4);
       }), this._emit("drop", { files: n2 });
@@ -28786,7 +28788,7 @@ var xe = function() {
     else
       this._emit("drop", { files: e3 });
   }, t2._loadZip = function(e3) {
-    var t3 = this, n2 = [], i2 = new Map(), r2 = new be.FS(), a2 = function e4(t4) {
+    var t3 = this, n2 = [], i2 = /* @__PURE__ */ new Map(), r2 = new be.FS(), a2 = function e4(t4) {
       t4.directory ? t4.children.forEach(e4) : t4.name[0] !== "." && n2.push(new Promise(function(e5) {
         t4.getData(new K.BlobWriter(), function(n3) {
           n3.name = t4.name, i2.set(t4.getFullname(), n3), e5();
