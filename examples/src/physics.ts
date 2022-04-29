@@ -103,7 +103,8 @@ async function main() {
   scene.environment = envMap;
   scene.background = envMap;
   const camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
-  camera.position.set(0, 10, 20);
+  camera.position.set(-5, 3, 15);
+  camera.zoom = 5.8;
   scene.add(camera);
 
   new OrbitControls(camera, canvas);
