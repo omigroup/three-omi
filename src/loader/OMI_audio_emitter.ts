@@ -14,9 +14,9 @@ import { GLTFParser, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 export class GLTFAudioEmitterExtension {
   public name: string;
   public listener: AudioListener;
-  public playing: boolean;
+  public autoPlay: boolean;
   public audioEmitters: {
-    playing: boolean;
+    autoPlay: boolean;
     obj: Audio<GainNode | PannerNode> | PositionalAudio;
   }[];
 
@@ -24,31 +24,31 @@ export class GLTFAudioEmitterExtension {
   private audioLoader: AudioLoader;
 
   constructor(parser: GLTFParser, listener: AudioListener) {
-    this.name = "OMI_audio_emitter";
+    this.name = "KHR_audio";
     this.parser = parser;
     this.listener = listener;
     this.audioEmitters = [];
-    this.playing = true;
+    this.autoPlay = true;
     this.audioLoader = new AudioLoader(this.parser.options.manager);
   }
 
   loadAudioSource(
-    audioSourceIndex: number
+    audioSourceIndex: Array<number>
   ): Promise<AudioBuffer> {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
-    const audioSource = extension.audioSources[audioSourceIndex];
+    const audioSource = extension.sources[audioSourceIndex[0]];
 
-    if (audioSource.uri) {
+    if (extension.audio[audioSource.audio].uri){
       return this.audioLoader.loadAsync(
         LoaderUtils.resolveURL(
-          audioSource.uri,
+          extension.audio[audioSource.audio].uri,
           this.parser.options.path
         )
       );
     } else {
       return this.parser
-        .getDependency("bufferView", audioSource.bufferView)
+        .getDependency("bufferView", extension.audio[audioSource.audio].bufferView)
         .then((buffer: ArrayBuffer) => {
           const bufferCopy = buffer.slice(0) ;
           const context = this.listener.context;
@@ -62,7 +62,7 @@ export class GLTFAudioEmitterExtension {
   ): Promise<Audio<GainNode | PannerNode> | PositionalAudio> {
     const json = this.parser.json;
     const extension = json.extensions[this.name];
-    const audioEmitterDef = extension.audioEmitters[audioEmitterIndex];
+    const audioEmitterDef = extension.emitters[audioEmitterIndex];
 
     let obj: Audio<GainNode | PannerNode> | PositionalAudio;
 
@@ -107,11 +107,10 @@ export class GLTFAudioEmitterExtension {
     obj.name = audioEmitterDef.name || "";
     obj.gain.gain.value =
       audioEmitterDef.gain !== undefined ? audioEmitterDef.gain : 1;
-
-    return this.loadAudioSource(audioEmitterDef.source).then((source) => {
+    return this.loadAudioSource(audioEmitterDef.sources).then((source) => {
       obj.setBuffer(source);
       obj.setLoop(!!audioEmitterDef.loop);
-      this.audioEmitters.push({ playing: !!audioEmitterDef.playing, obj });
+      this.audioEmitters.push({ autoPlay: !!extension.sources[audioEmitterDef.sources[0]].autoPlay, obj });
       return obj;
     });
   }
@@ -127,7 +126,7 @@ export class GLTFAudioEmitterExtension {
     }
 
     const extension = nodeDef.extensions[this.name];
-    const audioEmitterIndex = extension.audioEmitter;
+    const audioEmitterIndex = extension.emitter;
 
     return this.loadAudioEmitter(audioEmitterIndex);
   }
@@ -141,7 +140,7 @@ export class GLTFAudioEmitterExtension {
     }
 
     const extension = sceneDef.extensions[this.name];
-    const audioEmitterIndices: number[] = extension.audioEmitters;
+    const audioEmitterIndices: number[] = extension.emitters;
 
     const pending = audioEmitterIndices.map((index) =>
       this.loadAudioEmitter(index)
@@ -160,7 +159,7 @@ export class GLTFAudioEmitterExtension {
         this.loadSceneEmitters(sceneIndex, scene)
       );
       return Promise.all(pending).then(() => {
-        if (this.playing) {
+        if (this.autoPlay) {
           this.startPlayingEmitters();
         }
       });
@@ -169,7 +168,7 @@ export class GLTFAudioEmitterExtension {
 
   startPlayingEmitters(): void {
     for (const emitter of this.audioEmitters) {
-      if (!emitter.playing) {
+      if (!emitter.autoPlay) {
         return;
       }
 
