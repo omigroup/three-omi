@@ -14,14 +14,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: "15"
+          node-version: "18"
 
       - name: Install and Build
         run: |
           npm ci
-          npm run build:site
+          npx vite build --mode site
+
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: gh-pages
-          folder: site
+          folder: dist

@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>three-omi</title>
-    <link rel="stylesheet" href="./examples/styles.css" />
-  </head>
-  <body>
-    <div class="container">
-      <nav className="nav">
-        <h1>
-          <a href="#"> three-omi: </a>
-        </h1>
-        <li>
-          <a href="./examples/index.html"> Examples </a>
-        </li>
-      </nav>
-      <main>
-        <div class="center">
-          <h1>three-omi</h1>
-          <h3>
-            Three.js implementations of the OMI glTF extensions.
-          </h3>
-        </div>
-      </main>
-    </div>
-  </body>
+	<head>
+		<meta charset="utf-8" />
+		<title>Three.js OMI glTF extensions example</title>
+		<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+		<link rel="stylesheet" href="src/styles.css" />
+	</head>
+	<body>
+		<nav>
+			<h1>Three.js OMI glTF extensions</h1>
+			<ul>
+				<li>Examples</li>
+				<li>
+					<ul>
+						<li><a href="javascript:loadAndReplace('boom_box/boom_box.glb')">Boom Box (.glb)</a></li>
+						<li><a href="javascript:loadAndReplace('boom_box/boom_box.gltf')">Boom Box (.gltf)</a></li>
+						<li><a href="javascript:loadAndReplace('outdoor_festival/outdoor_festival.gltf')">Outdoor Festival</a></li>
+						<li><a href="javascript:loadAndReplace('talking_sphere/talking_sphere.gltf')">Talking Sphere</a></li>
+					</ul>
+				</li>
+				<li>External Links</li>
+				<li>
+					<ul>
+						<li><a href="https://github.com/omigroup/gltf-extensions/tree/main/extensions/2.0">OMI glTF Extension Specs</a></li>
+						<li><a href="https://github.com/omigroup/three-omi">three-omi Source Code</a></li>
+						<li><a href="https://www.npmjs.com/package/three-omi">three-omi NPM Package</a></li>
+					</ul>
+				</li>
+			</ul>
+			<span id="volumeSpan">Volume: <input type="range" min="1" max="100" value="40" id="volumeSlider"></span>
+		</nav>
+		<main>
+			<div class="center">
+				<h2>Click an example on the left to load it here.</h2>
+				<h4>Then click and drag to rotate the camera, right-click to pan, and scroll to zoom.</h4>
+			</div>
+		</main>
+        <script type="module" src="src/main.js"></script>
+	</body>
 </html>
