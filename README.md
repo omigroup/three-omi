@@ -28,7 +28,7 @@ Then use it like this:
 ```js
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { GLTFLoaderAudioEmitterExtension } from "three-omi/khr_audio_emitter.js";
+import { GLTFLoaderAudioEmitterExtension } from "three-omi/src/khr_audio_emitter.js";
 
 // Set up your scene, camera, and renderer here.
 
